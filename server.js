@@ -39,6 +39,19 @@ const host = process.env.HOST
 /* ***********************
  * Log statement to confirm server operation
  *************************/
-app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
-})
+app
+  .listen(port, () => {
+    console.log(`app listening on ${host}:${port}`);
+  })
+  .on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(`❌ Port ${port} is already in use. Trying a new one...`);
+      const newPort = port + 1;
+      app.listen(newPort, () => {
+        console.log(`✅ App now running at: http://${host}:${newPort}`);
+      });
+    } else {
+      console.error("Server error:", err);
+    }
+  });
+
